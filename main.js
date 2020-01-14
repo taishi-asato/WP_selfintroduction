@@ -1,10 +1,17 @@
+
+
 window.onload = load;
 
+
+// 定数
 var SCREEN_WIDTH	= 40;
 var SCREEN_HEIGHT	= 20;
-var tempCounter	= 0;
+
+var MAIN_OBJ_RNO_0_INIT	= 0;
+var MAIN_OBJ_RNO_0_MAIN	= 1;
 
 
+// グローバル変数
 var gMainObj	= null;
 var gCharObjs	= null;
 var gScreenData	= [];
@@ -29,7 +36,6 @@ function load() {
 	var inputFormName	= "";
 	for(var i= 0; i<DotsNum; i++){
 		inputFormName	= "text" + i;
-		console.log("inputFormName..." +inputFormName);
 		tempDomObj = document.createElement('input');
 		tempDomObj.setAttribute('type', 'text' );
 		tempDomObj.setAttribute('name', inputFormName );
@@ -55,21 +61,15 @@ function load() {
 	毎フレーム呼ばれる関数
 *=========================================*/
 function Loop() {
-	tempCounter++;
-	var tempOutput	= String(tempCounter );
-	document.getElementById("area1").innerText = tempOutput;
+//	document.getElementById("area1").innerText = tempOutput;
 
 	gMainObj.MainLoop();
 
+	// 0.1秒後に再度Loopを呼び出す
 	setTimeout(Loop, 100);
 }
 
 
-/*=========================================
-	あああ
-*=========================================*/
-var MAIN_OBJ_RNO_0_INIT	= 0;
-var MAIN_OBJ_RNO_0_MAIN	= 1;
 
 /*=========================================
 	あああ
@@ -82,10 +82,13 @@ MainObject	= function(){
 	this.Rno1	= 0;
 	this.Rno2	= 0;
 
+
+	// 初期化処理へ
+	this.ChangeRno0( MAIN_OBJ_RNO_0_INIT );
 };
 
 /*=========================================
-	あああ
+	毎フレーム呼ばれる処理
 *=========================================*/
 MainObject.prototype.MainLoop = function(  ) {
 	
@@ -98,7 +101,7 @@ MainObject.prototype.MainLoop = function(  ) {
 
 
 /*=========================================
-	あああ
+	初期化関連
 *=========================================*/
 MainObject.prototype.Rno0_Init = function(  ) {
 	// 初期化あれば
@@ -110,19 +113,18 @@ MainObject.prototype.Rno0_Init = function(  ) {
 	}
 
 	gCharObjs	= new Array();
-	gCharObjs.push( new CharaObject("piyo", 40, 0) );
-	gCharObjs.push( new CharaObject("hoge", 60, 10) );
+	gCharObjs.push( new CharaObject("piyo", 40, 0, -0.7, 0) );
+	gCharObjs.push( new CharaObject("hoge", 60, 10, -0.7, -0.1) );
 
 	// 次の処理へ
 	this.ChangeRno0( MAIN_OBJ_RNO_0_MAIN );
 };
 
 /*=========================================
-	あああ
+
 *=========================================*/
 MainObject.prototype.Rno0_Main = function(  ) {
 
-	// メイン処理
 	for(var i=0; i<gCharObjs.length; i++){
 		gCharObjs[i].pUpdateCharaPos();
 	}
@@ -130,39 +132,37 @@ MainObject.prototype.Rno0_Main = function(  ) {
 	
 };
 
+/*=========================================
+スクリーン上にドットオブジェクトを描画
+*=========================================*/
 MainObject.prototype.DrawScreen = function(  ) {
 
-
+	// まず、スクリーンデータをクリアする
 	for(var i=0; i<gScreenData.length; i++){
 		for( var j=0; j<gScreenData[i].length; j++){
 			gScreenData[i][j]	= 0;
 		}
 	}
 
+	// スクリーンデータを管理している配列の更新
 	var CharaDotData	= null;
-	var OffsetX	= 0;
-	var OffsetY	= 0;
+	var ScreenPosX	= 0;
+	var ScreenPosY	= 0;
 	for( var i=0; i<gCharObjs.length; i++){
 		CharaDotData	= gCharObjs[i].Dotsdata;
 		for( var j=0; j<CharaDotData.length; j++){
 			for( var k=0; k<CharaDotData[j].length; k++){
-				OffsetX	= gCharObjs[i].PosX_Floor + k;
-				OffsetY	= gCharObjs[i].PosY_Floor + j;
-				if( OffsetX >=0 &&  OffsetX < SCREEN_WIDTH && OffsetY >=0 &&  OffsetY < SCREEN_HEIGHT){
-					console.log("OffsetX..." +OffsetX + " j..." +j +"  k..." +k);
-					gScreenData[OffsetY][OffsetX]	= CharaDotData[j][k];
+				ScreenPosX	= gCharObjs[i].PosX_Floor + k;
+				ScreenPosY	= gCharObjs[i].PosY_Floor + j;
+				if( ScreenPosX >=0 &&  ScreenPosX < SCREEN_WIDTH && ScreenPosY >=0 &&  ScreenPosY < SCREEN_HEIGHT){
+//					console.log("ScreenPosX..." +ScreenPosX + " j..." +j +"  k..." +k);
+					gScreenData[ScreenPosY][ScreenPosX]	= CharaDotData[j][k];
 				}
-
 			}
 		}
 	}
 
-	
-	// 借り
-//	this.ChangeRno0( 5 );
-	console.log("gScreenData...\n" +gScreenData);
-
-
+	// スクリーンデータ配列を元に、HTMLに描画
 	var ScreenDots = document.getElementById("ScreenDots");
 	var tempCounter	= 0;
 	var tempString	= "";
@@ -171,17 +171,17 @@ MainObject.prototype.DrawScreen = function(  ) {
 			tempStrig	=  "ScreenDots.text" + tempCounter + ".value	=''; "
 			if(gScreenData[i][j] == 1){
 				tempStrig	=  "ScreenDots.text" + tempCounter + ".value	='■'; "
-//				console.log("i...."+i +"  j..." +j +"tempCounter..." +tempCounter);
 			}
-//			console.log("tempStrig  " +tempCounter)
 			eval(tempStrig);
 			tempCounter++;
 		}
 	}
-
 }
 
 
+/*=========================================
+メイン処理を変更する
+*=========================================*/
 MainObject.prototype.ChangeRno0 = function( _Rno0 ) {
 	this.Rno0	= _Rno0;
 	this.Rno1	= 0;
