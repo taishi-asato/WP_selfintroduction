@@ -8,7 +8,8 @@ var SCREEN_WIDTH	= 40;
 var SCREEN_HEIGHT	= 20;
 
 var MAIN_OBJ_RNO_0_INIT	= 0;
-var MAIN_OBJ_RNO_0_MAIN	= 1;
+var MAIN_OBJ_RNO_0_WAIT	= 1;
+var MAIN_OBJ_RNO_0_MAIN	= 2;
 
 
 // グローバル変数
@@ -61,8 +62,6 @@ function load() {
 	毎フレーム呼ばれる関数
 *=========================================*/
 function Loop() {
-//	document.getElementById("area1").innerText = tempOutput;
-
 	gMainObj.MainLoop();
 
 	// 0.1秒後に再度Loopを呼び出す
@@ -94,6 +93,7 @@ MainObject.prototype.MainLoop = function(  ) {
 	
 	switch( this.Rno0 ){
 		case MAIN_OBJ_RNO_0_INIT: this.Rno0_Init();	break;
+		case MAIN_OBJ_RNO_0_WAIT: this.Rno0_Wait();	break;
 		case MAIN_OBJ_RNO_0_MAIN: this.Rno0_Main();	break;
 	}
 	
@@ -113,17 +113,28 @@ MainObject.prototype.Rno0_Init = function(  ) {
 	}
 
 	gCharObjs	= new Array();
-	gCharObjs.push( new CharaObject("piyo", 40, 0, -0.7, 0) );
-	gCharObjs.push( new CharaObject("hoge", 60, 10, -0.7, -0.1) );
+	gCharObjs.push( new CharaObject("AN", 40, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("SATO", 55, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("TAI", 70, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("SHI", 85, 0, -1, 0) );
 
-	// 次の処理へ
-	this.ChangeRno0( MAIN_OBJ_RNO_0_MAIN );
+	// 次の処理へ 
+	this.ChangeRno0( MAIN_OBJ_RNO_0_WAIT );
 };
 
 /*=========================================
 
 *=========================================*/
+MainObject.prototype.Rno0_Wait = function(  ) {
+	// ボタン押されるのまち
+
+}
+
+/*=========================================
+
+*=========================================*/
 MainObject.prototype.Rno0_Main = function(  ) {
+
 
 	for(var i=0; i<gCharObjs.length; i++){
 		gCharObjs[i].pUpdateCharaPos();
@@ -178,7 +189,6 @@ MainObject.prototype.DrawScreen = function(  ) {
 	}
 }
 
-
 /*=========================================
 メイン処理を変更する
 *=========================================*/
@@ -187,6 +197,22 @@ MainObject.prototype.ChangeRno0 = function( _Rno0 ) {
 	this.Rno1	= 0;
 	this.Rno2	= 0;
 };
+
+
+/*=========================================
+	ボタンクリック時に呼ばれる関数たち
+*=========================================*/
+function OnButtonClick_ShowMyName(){
+	gCharObjs	= [];
+	gCharObjs.push( new CharaObject("AN", 40, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("SATO", 55, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("TAI", 70, 0, -1, 0) );
+	gCharObjs.push( new CharaObject("SHI", 85, 0, -1, 0) );
+
+
+	gMainObj.ChangeRno0( MAIN_OBJ_RNO_0_MAIN );
+};
+
 
 
 
