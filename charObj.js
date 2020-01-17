@@ -54,3 +54,21 @@ CharaObject.prototype.pUpdateCharaPos = function(  ) {
 	this.PosY_Floor	= Math.floor(this.PosY);
 }
 
+
+/*=========================================
+	‚ ‚ ‚ 
+*=========================================*/
+CharaObject.prototype.pAddSpeed = function(  _AddX, _AddY ) {
+	this.SpeedX	+= _AddX;
+	this.SpeedY	+= _AddY;
+}
+
+/*=========================================
+	‚ ‚ ‚ 
+*=========================================*/
+CharaObject.prototype.pSetSpeedValueZero = function(  ) {
+	this.SpeedX	= 0;
+	this.SpeedY	= 0;
+}
+
+

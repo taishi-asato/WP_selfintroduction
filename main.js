@@ -1,9 +1,10 @@
 
-
+// 最初に呼ばれる関数
 window.onload = load;
 
-
+//=================================
 // 定数
+//=================================
 var SCREEN_WIDTH	= 40;
 var SCREEN_HEIGHT	= 20;
 
@@ -12,7 +13,10 @@ var MAIN_OBJ_RNO_0_WAIT	= 1;
 var MAIN_OBJ_RNO_0_MAIN	= 2;
 
 
+
+//=================================
 // グローバル変数
+//=================================
 var gMainObj	= null;
 var gCharObjs	= null;
 var gScreenData	= [];
@@ -28,7 +32,7 @@ function load() {
 	var ScreenPlace = document.getElementById("ScreenPlace");
 	var form = document.createElement('form');
 	form.setAttribute('id', 'ScreenDots' );
-	console.log(form);
+//	console.log(form);
 	ScreenPlace.appendChild(form);
 
 	var DotsNum		= SCREEN_WIDTH * SCREEN_HEIGHT;
@@ -54,6 +58,7 @@ function load() {
 
 	gMainObj	= new MainObject();
 
+	// Loop関数を起動する
 	setTimeout(Loop, 100);
 }
 
@@ -75,8 +80,7 @@ function Loop() {
 *=========================================*/
 MainObject	= function(){
 
-	this.Hoge	= 123;
-	
+	// 処理の分岐を制御するパラメータ
 	this.Rno0	= 0;
 	this.Rno1	= 0;
 	this.Rno2	= 0;
@@ -104,7 +108,8 @@ MainObject.prototype.MainLoop = function(  ) {
 	初期化関連
 *=========================================*/
 MainObject.prototype.Rno0_Init = function(  ) {
-	// 初期化あれば
+
+	// スクリーンをgScreenData配列で表現する。gScreenDataの初期化処理。
 	for(var i=0; i<SCREEN_HEIGHT; i++){
 		gScreenData[i]	= [];
 		for(var j=0; j<SCREEN_WIDTH; j++){
@@ -112,18 +117,15 @@ MainObject.prototype.Rno0_Init = function(  ) {
 		}
 	}
 
+	// スクリーンに表示する文字データを管理する配列
 	gCharObjs	= new Array();
-	gCharObjs.push( new CharaObject("AN", 40, 0, -1, 0) );
-	gCharObjs.push( new CharaObject("SATO", 55, 0, -1, 0) );
-	gCharObjs.push( new CharaObject("TAI", 70, 0, -1, 0) );
-	gCharObjs.push( new CharaObject("SHI", 85, 0, -1, 0) );
 
 	// 次の処理へ 
 	this.ChangeRno0( MAIN_OBJ_RNO_0_WAIT );
 };
 
 /*=========================================
-
+	「名前」ボタン押されるのまち
 *=========================================*/
 MainObject.prototype.Rno0_Wait = function(  ) {
 	// ボタン押されるのまち
@@ -131,20 +133,22 @@ MainObject.prototype.Rno0_Wait = function(  ) {
 }
 
 /*=========================================
-
+	「名前」ボタン押されたあとのループ処理
 *=========================================*/
 MainObject.prototype.Rno0_Main = function(  ) {
 
-
+	// 文字データの位置更新
 	for(var i=0; i<gCharObjs.length; i++){
 		gCharObjs[i].pUpdateCharaPos();
 	}
+	
+	// 描画処理
 	this.DrawScreen();
 	
 };
 
 /*=========================================
-スクリーン上にドットオブジェクトを描画
+スクリーン上にドットを描画
 *=========================================*/
 MainObject.prototype.DrawScreen = function(  ) {
 
@@ -155,7 +159,7 @@ MainObject.prototype.DrawScreen = function(  ) {
 		}
 	}
 
-	// スクリーンデータを管理している配列の更新
+	// 文字データの位置座標を元に、スクリーンデータを管理している配列を更新する
 	var CharaDotData	= null;
 	var ScreenPosX	= 0;
 	var ScreenPosY	= 0;
@@ -209,11 +213,37 @@ function OnButtonClick_ShowMyName(){
 	gCharObjs.push( new CharaObject("TAI", 70, 0, -1, 0) );
 	gCharObjs.push( new CharaObject("SHI", 85, 0, -1, 0) );
 
-
 	gMainObj.ChangeRno0( MAIN_OBJ_RNO_0_MAIN );
 };
 
 
+/*=========================================
+	方向ボタン押されたとき
+*=========================================*/
+function OnButtonClick_Accelerate( _Direction ){
 
+	var AddSpdX	= 0;
+	var AddSpdY	= 0;
 
+	switch( _Direction ){
+		case "left":	AddSpdX = -0.5;	break;
+		case "right":	AddSpdX = 0.5;	break;
+		case "up":		AddSpdY = 0.5;	break;
+		case "down":	AddSpdY = -0.5;	break;
+	}
+
+	for(var i=0; i<gCharObjs.length; i++){
+		gCharObjs[i].pAddSpeed( AddSpdX, AddSpdY );
+	}
+};
+
+/*=========================================
+	止めるボタン押されたとき
+*=========================================*/
+function OnButtonClick_StopCharas( ){
+
+	for(var i=0; i<gCharObjs.length; i++){
+		gCharObjs[i].pSetSpeedValueZero();
+	}
+};
 
